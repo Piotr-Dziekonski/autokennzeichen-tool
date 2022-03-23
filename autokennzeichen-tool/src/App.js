@@ -1,15 +1,22 @@
-import logo from './logo.svg';
-import { useState, useEffect } from 'react';
-import { Navbar, Container, Nav, NavDropdown, Table } from 'react-bootstrap';
+import { useState, useEffect, useRef } from 'react';
+import { Navbar, Container, Nav, Table } from 'react-bootstrap';
 import axios from 'axios';
-import './App.css';
 import Row from './Row';
+import './App.css';
 
 function App() {
-
   const [tableContent, setTableContent] = useState([])
+  const [inputFile, setInputFile] = useState(null);
+  const inputRef = useRef(null);
+  useEffect(() => {
+    setInputFile(document.getElementById("input-file"));
+  }, []);
 
   useEffect(() => {
+    getDbContent();
+  }, [])
+
+  const getDbContent = () => {
     axios.get(`http://localhost:8081/`)
       .then(res => {
         let temp = []
@@ -18,7 +25,30 @@ function App() {
         });
         setTableContent(temp)
       })
-  }, [])
+  }
+
+  const handleUpload = () => {
+    inputFile?.click();
+  };
+
+  const upload = async () => {
+    try {
+      inputRef.current?.files && setInputFile(inputRef.current.files[0])
+      console.log(inputRef.current.files[0])
+      const formData = new FormData();
+      formData.append("uploadedFile", inputRef.current.files[0]);
+      const config = {
+        headers: {
+          'content-type': 'multipart/form-data'
+        }
+      }
+      axios.post('http://localhost:8081/importFromFile', formData, config).then((response) => {
+        getDbContent()
+      })
+    } catch (e) {
+      console.log(e)
+    }
+  }
 
   return (
     <>
@@ -27,16 +57,17 @@ function App() {
           <Navbar.Brand href="#home">Autokennzeichen-Tool</Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="me-auto">
-              <Nav.Link href="#home">Home</Nav.Link>
-              <Nav.Link href="#link">Link</Nav.Link>
-              <NavDropdown title="Dropdown" id="basic-nav-dropdown">
-                <NavDropdown.Item href="#action/3.1">Action</NavDropdown.Item>
-                <NavDropdown.Item href="#action/3.2">Another action</NavDropdown.Item>
-                <NavDropdown.Item href="#action/3.3">Something</NavDropdown.Item>
-                <NavDropdown.Divider />
-                <NavDropdown.Item href="#action/3.4">Separated link</NavDropdown.Item>
-              </NavDropdown>
+            <Nav className="justify-content-end" style={{ width: "100%" }}>
+              <Nav.Link href="#import" className='navbar-link d-flex' onClick={handleUpload}>
+                <form action="/upload" method="post" enctype="multipart/form-data">
+                  <input id="input-file" name={"uploadedFile"} ref={inputRef} onChange={upload} className="d-none" type="file" />
+                  Import
+                </form>
+              </Nav.Link>
+              <Nav.Link href="#export" className='navbar-link d-flex' onClick={handleUpload}>
+                <input id="input-file2" className="d-none" type="file" />
+                Export
+              </Nav.Link>
             </Nav>
           </Navbar.Collapse>
         </Container>

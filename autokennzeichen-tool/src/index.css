@@ -11,3 +11,22 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+.navbar {
+  padding: 0 !important;
+  height: 3.25rem;
+}
+.navbar-nav, #basic-navbar-nav  {
+  height: 100%;
+}
+.navbar .container {
+  height: 100%;
+}
+.navbar-link {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+.navbar-link:hover{
+  background-color: #6c757d;
+  color: white !important;
+}
