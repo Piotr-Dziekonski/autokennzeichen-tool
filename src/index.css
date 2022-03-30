@@ -21,7 +21,7 @@ code {
 .navbar .container {
   height: 100%;
 }
-.navbar-link {
+.navbar-link, #basic-nav-dropdown{
   display: flex;
   align-items: center;
   height: 100%;
@@ -29,4 +29,7 @@ code {
 .navbar-link:hover{
   background-color: #6c757d;
   color: white !important;
+}
+.nav-item.dropdown:hover .dropdown-menu {
+  display: block;
 }
