@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
-import { Navbar, Container, Nav, Table } from 'react-bootstrap';
+import { NavDropdown, Navbar, Container, Nav, Table } from 'react-bootstrap';
 import axios from 'axios';
 import Row from './Row';
 import './App.css';
+import download from 'downloadjs';
 
 function App() {
   const [tableContent, setTableContent] = useState([])
@@ -39,7 +40,7 @@ function App() {
       formData.append("uploadedFile", inputRef.current.files[0]);
       const config = {
         headers: {
-          'content-type': 'multipart/form-data'
+          'content-type': 'multipart/form-data',
         }
       }
       axios.post('http://localhost:8081/importFromFile', formData, config).then((response) => {
@@ -48,6 +49,39 @@ function App() {
     } catch (e) {
       console.log(e)
     }
+  }
+  const handleExport = async (e) => {
+
+    switch (e.target.id) {
+      case "exportJson":
+        await axios.get('http://localhost:8081/exportJson', {
+          responseType: 'json'
+        }, { timeout: 200 }).then((response) => {
+          console.log(response.data)
+          const fileData = JSON.stringify(response.data, null, 2);
+          prepareDownload(fileData, "json")      
+        })
+        break;
+      case "exportXml":
+        await axios.get('http://localhost:8081/exportXml', { timeout: 1000 }).then((response) => {
+          prepareDownload(response.data, "xml")      
+        })
+        break;
+    
+      default:
+        break;
+    }
+
+
+  }
+
+  const prepareDownload = (fileData, extension) => {
+    const blob = new Blob([fileData], {type: "text/plain"});
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.download = "export." + extension;
+    link.href = url; 
+    link.click();
   }
 
   return (
@@ -59,15 +93,16 @@ function App() {
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="justify-content-end" style={{ width: "100%" }}>
               <Nav.Link href="#import" className='navbar-link d-flex' onClick={handleUpload}>
-                <form action="/upload" method="post" enctype="multipart/form-data">
+                <form action="/upload" method="post" encType="multipart/form-data">
                   <input id="input-file" name={"uploadedFile"} ref={inputRef} onChange={upload} className="d-none" type="file" />
                   Import
                 </form>
               </Nav.Link>
-              <Nav.Link href="#export" className='navbar-link d-flex' onClick={handleUpload}>
-                <input id="input-file2" className="d-none" type="file" />
-                Export
-              </Nav.Link>
+              <NavDropdown title="Export" id="basic-nav-dropdown" renderMenuOnMount={true}>
+              <NavDropdown.Item id="exportJson" onClick={handleExport}>als Json</NavDropdown.Item>
+              <NavDropdown.Item id="exportXml" onClick={handleExport}>als XML</NavDropdown.Item>
+              <NavDropdown.Item id="exportCsv">als CSV</NavDropdown.Item>
+              </NavDropdown>
             </Nav>
           </Navbar.Collapse>
         </Container>
