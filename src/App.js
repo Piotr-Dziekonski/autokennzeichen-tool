@@ -1,14 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
 import { NavDropdown, Navbar, Container, Nav, Table } from 'react-bootstrap';
-import axios from 'axios';
+import ImportExportController from './ImportExportController';
 import Row from './Row';
 import './App.css';
-import download from 'downloadjs';
 
 function App() {
   const [tableContent, setTableContent] = useState([])
   const [inputFile, setInputFile] = useState(null);
   const inputRef = useRef(null);
+
   useEffect(() => {
     setInputFile(document.getElementById("input-file"));
   }, []);
@@ -18,14 +18,13 @@ function App() {
   }, [])
 
   const getDbContent = () => {
-    axios.get(`http://localhost:8081/`)
-      .then(res => {
-        let temp = []
-        res.data.forEach((element, index) => {
-          temp = [...temp, <Row content={element} key={index}></Row>];
-        });
-        setTableContent(temp)
-      })
+    ImportExportController.getDbContent().then(response => {
+      let temp = []
+      response.data.forEach((element, index) => {
+        temp = [...temp, <Row content={element} key={index}></Row>];
+      });
+      setTableContent(temp)
+    })
   }
 
   const handleUpload = () => {
@@ -33,54 +32,22 @@ function App() {
   };
 
   const upload = async () => {
-    try {
-      inputRef.current?.files && setInputFile(inputRef.current.files[0])
-      console.log(inputRef.current.files[0])
-      const formData = new FormData();
-      formData.append("uploadedFile", inputRef.current.files[0]);
-      const config = {
-        headers: {
-          'content-type': 'multipart/form-data',
-        }
-      }
-      axios.post('http://localhost:8081/importFromFile', formData, config).then((response) => {
-        getDbContent()
-      })
-    } catch (e) {
-      console.log(e)
-    }
-  }
-  const handleExport = async (e) => {
-
-    switch (e.target.id) {
-      case "exportJson":
-        await axios.get('http://localhost:8081/exportJson', {
-          responseType: 'json'
-        }, { timeout: 200 }).then((response) => {
-          console.log(response.data)
-          const fileData = JSON.stringify(response.data, null, 2);
-          prepareDownload(fileData, "json")      
-        })
-        break;
-      case "exportXml":
-        await axios.get('http://localhost:8081/exportXml', { timeout: 1000 }).then((response) => {
-          prepareDownload(response.data, "xml")      
-        })
-        break;
-    
-      default:
-        break;
-    }
-
-
+    ImportExportController
+      .upload(inputRef, 'http://localhost:8081/importFromFile')
+      .then(() => getDbContent(), reason => console.log(reason))
   }
 
-  const prepareDownload = (fileData, extension) => {
-    const blob = new Blob([fileData], {type: "text/plain"});
+  const handleExport = async (expectedResponseType, extension) => {
+    ImportExportController.handleExport(expectedResponseType).then((blob) => {
+      prepareDownload(blob, extension)
+    })
+  }
+
+  const prepareDownload = (blob, extension) => {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.download = "export." + extension;
-    link.href = url; 
+    link.href = url;
     link.click();
   }
 
@@ -99,9 +66,9 @@ function App() {
                 </form>
               </Nav.Link>
               <NavDropdown title="Export" id="basic-nav-dropdown" renderMenuOnMount={true}>
-              <NavDropdown.Item id="exportJson" onClick={handleExport}>als Json</NavDropdown.Item>
-              <NavDropdown.Item id="exportXml" onClick={handleExport}>als XML</NavDropdown.Item>
-              <NavDropdown.Item id="exportCsv">als CSV</NavDropdown.Item>
+                <NavDropdown.Item id="exportJson" onClick={() => handleExport("application/json", "json")}>als Json</NavDropdown.Item>
+                <NavDropdown.Item id="exportXml" onClick={() => handleExport("application/xml", "xml")}>als XML</NavDropdown.Item>
+                <NavDropdown.Item id="exportCsv" onClick={() => handleExport("application/csv", "csv")}>als CSV</NavDropdown.Item>
               </NavDropdown>
             </Nav>
           </Navbar.Collapse>
