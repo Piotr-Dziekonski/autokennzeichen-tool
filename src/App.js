@@ -3,6 +3,7 @@ import { NavDropdown, Navbar, Container, Nav, Table } from 'react-bootstrap';
 import ImportExportController from './ImportExportController';
 import Row from './Row';
 import './App.css';
+import CustomNavbar from './CustomNavbar';
 
 function App() {
   const [tableContent, setTableContent] = useState([])
@@ -53,27 +54,10 @@ function App() {
 
   return (
     <>
-      <Navbar bg="light" expand="lg">
-        <Container>
-          <Navbar.Brand href="#home">Autokennzeichen-Tool</Navbar.Brand>
-          <Navbar.Toggle aria-controls="basic-navbar-nav" />
-          <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="justify-content-end" style={{ width: "100%" }}>
-              <Nav.Link href="#import" className='navbar-link d-flex' onClick={handleUpload}>
-                <form action="/upload" method="post" encType="multipart/form-data">
-                  <input id="input-file" name={"uploadedFile"} ref={inputRef} onChange={upload} className="d-none" type="file" />
-                  Import
-                </form>
-              </Nav.Link>
-              <NavDropdown title="Export" id="basic-nav-dropdown" renderMenuOnMount={true}>
-                <NavDropdown.Item id="exportJson" onClick={() => handleExport("application/json", "json")}>als Json</NavDropdown.Item>
-                <NavDropdown.Item id="exportXml" onClick={() => handleExport("application/xml", "xml")}>als XML</NavDropdown.Item>
-                <NavDropdown.Item id="exportCsv" onClick={() => handleExport("application/csv", "csv")}>als CSV</NavDropdown.Item>
-              </NavDropdown>
-            </Nav>
-          </Navbar.Collapse>
-        </Container>
-      </Navbar>
+        <CustomNavbar>
+
+        </CustomNavbar>
+      
       <Container>
         <Table striped bordered hover>
           <thead>
