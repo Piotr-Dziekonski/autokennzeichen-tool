@@ -1,5 +1,6 @@
 import React from 'react'
 import './CustomNavbar.css'
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
 export default function CustomNavbar() {
 
@@ -7,11 +8,16 @@ export default function CustomNavbar() {
 
   return (
     <div className='customNavbar'>
-        <div className='customBrand'></div>
+        <div className='customBrand'>
+            Autokennzeichentool
+        </div>
         <div className='customOptionBar'>
-            <div className='customDropdown'>
-                <div className='customDropTitle'>Export</div>
-                <div className='customDropList'>
+            <div className='customOption customOptionBarElement'>
+                Import
+            </div>
+            <div className='customDropdown customOptionBarElement'>
+                <div className='customDropTitle'>Export<ArrowDropDownIcon/></div>
+                <div className='customDropList '>
                     <div className='customDropOption'>
                         as Json
                     </div>
