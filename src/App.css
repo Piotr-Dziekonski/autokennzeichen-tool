@@ -36,3 +36,19 @@
     transform: rotate(360deg);
   }
 }
+
+.tableModifiers {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+.tableModifiersLeft {
+  display: flex;
+}
+.tableModifiersLeft button{
+  margin-left: 0.5rem;
+}
+.filter {
+  max-width: 300px;
+  margin-left: 1rem;
+}

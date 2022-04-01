@@ -2,6 +2,13 @@ import axios from 'axios'
 
 export default class ImportExportController {
 
+  static addNewLicensePlate = async (ortskuerzel, ursprung, landkreis, bundesland) => {
+    return new Promise((resolve, reject) => {
+      axios.post(`http://localhost:8081/addLicensePlate/${ortskuerzel}/${ursprung}/${landkreis}/${bundesland}/`)
+      .then(res => resolve(res))
+    })
+  }
+
   static getDbContent = async () => {
     return new Promise((resolve, reject) => {
       axios.get(`http://localhost:8081/`)
@@ -20,7 +27,9 @@ export default class ImportExportController {
         }
         const formData = new FormData();
 
-        formData.append("uploadedFile", inputRef.current.files[0]);
+        formData.append('uploadedFile', inputRef.current.files[0], {
+          type: "application/json"
+      });
 
         axios.post(url, formData, config).then(response => resolve(response), reason => reject(reason))
     })

@@ -61,6 +61,10 @@
     overflow: hidden;
     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
+#importOption:hover {
+    color: white;
+    transition: all 0.5s;
+}
 .customDropTitle:hover, .customDropOption:hover, .customOptionBarElement:hover {
     background-color: var(--bs-gray-800);
     color: white;
@@ -79,5 +83,9 @@
 .customDropdown:hover .customDropList {
     transition: max-height 0.5s ease-in-out;
     max-height: 1000px;
+}
+#importOption {
+    color: var(--bs-body-color);
+    text-decoration: none;
 }
 
