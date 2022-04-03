@@ -1,6 +1,13 @@
-import React from 'react'
+type Props = {
+  content: {
+    Ortskuerzel: string,
+    Ursprung: string,
+    Landkreis: string,
+    Bundesland: string,
+  },
+}
 
-export default function Row(props) {
+export default function Row(props: Props) {
   const content = props.content
   return (
     <tr>

@@ -1,6 +1,6 @@
 
-import React, { useState, useEffect, useRef } from 'react';
-import { Button, Form, NavDropdown, Navbar, Container, Nav, Table } from 'react-bootstrap';
+import { useState, useEffect, useRef } from 'react';
+import { Button, Form, Container, Table } from 'react-bootstrap';
 import ImportExportController from './ImportExportController';
 import Row from './Row';
 import './App.css';
@@ -9,41 +9,45 @@ import AddModal from './AddModal';
 import SearchController from './SearchController';
 
 function App() {
-  const [tableContent, setTableContent] = useState([])
+  const [tableContent, setTableContent] = useState<any[] | undefined>(undefined)
   const [modalShow, setModalShow] = useState(false);
   const [searchValue, setSearchValue] = useState("");
-  const filterRef = useRef(null);
-  const searchInputRef = useRef(null)
+  const [selectedFilter, setSelectedFilter] = useState("none");
+  const [dbContent, setDbContent] = useState<any[] | undefined>(undefined);
+  const filterRef = useRef<HTMLSelectElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    getDbContent();
-  }, [])
+    if(dbContent === undefined){
+      fetchDbContent()
+      return
+    } 
+    const rows = createRows(dbContent)
+    setTableContent(rows)
+  }, [dbContent])
 
-  const getDbContent = () => {
-    ImportExportController.getDbContent().then(response => {
-      const rows = createRows(response.data)
-      setTableContent(rows)
+  const fetchDbContent = () => {
+    ImportExportController.getDbContent().then((response: any) => {
+      setDbContent(response.data)
     })
   }
 
-  const createRows = (array) => {
-    let temp = [];
+  const createRows = (array: any[]) => {
+    let temp: any[] = [];
     array.forEach((element, index) => {
       temp = [...temp, <Row content={element} key={index}></Row>];
     });
     return temp;
   }
 
-  const handleClear = (e) => {
-    searchInputRef.current.value = ""
-    filterRef.current.value = "none"
+  const handleClear = () => {
     setSearchValue("")
-    getDbContent();
-
+    setSelectedFilter('none')
+    fetchDbContent();
   }
 
-  const handleSearch = async (e) => {
-    const filterOption = filterRef.current.value
+  const handleSearch = async () => {
+    const filterOption = filterRef.current?.value
     let result = null;
     if(filterOption === 'kuerzel'){
       result = await SearchController.searchOrtskuerzel(searchValue)
@@ -61,15 +65,13 @@ function App() {
 
   return (
     <>
-      <CustomNavbar getDbContent={getDbContent}>
-
-      </CustomNavbar>
+      <CustomNavbar getDbContent={fetchDbContent} />
       <Container>
         <div className='tableModifiers'>
           <div className='tableModifiersLeft'>
-          <input ref={searchInputRef} type={'text'} placeholder={'Suchen...'} onChange={(e) => setSearchValue(e.target.value)}></input>
-          <Form.Select ref={filterRef} className='filter' aria-label="Default select example">
-              <option value="none" disabled selected="selected"></option>
+          <input ref={searchInputRef} type={'text'} placeholder={'Suchen...'} onChange={(e) => setSearchValue(e.target.value)} value={searchValue}></input>
+          <Form.Select ref={filterRef} className='filter' aria-label="Default select example" value={selectedFilter} onChange={e => setSelectedFilter(e.target.value)}>
+              <option value="none" disabled></option>
               <option value="kuerzel">Ortskürzel</option>
               <option value="ursprung">Ursprung</option>
               <option value="region">Region</option>
@@ -99,7 +101,6 @@ function App() {
             {tableContent}
           </tbody>
         </Table>
-
       </Container>
     </>
 

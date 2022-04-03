@@ -1,12 +1,15 @@
-import React from 'react'
 import './CustomNavbar.css'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { useState, useEffect, useRef } from 'react';
 import ImportExportController from './ImportExportController';
 
-export default function CustomNavbar(props) {
+type Props = {
+    getDbContent: () => void
+}
 
-    const [inputFile, setInputFile] = useState(null);
+export default function CustomNavbar(props: Props) {
+
+    const [inputFile, setInputFile] = useState<HTMLElement | null>(null);
     const inputRef = useRef(null);
 
     useEffect(() => {
@@ -19,18 +22,17 @@ export default function CustomNavbar(props) {
     }
 
     const upload = async () => {
-        ImportExportController
-            .upload(inputRef, 'http://localhost:8081/importFromFile')
+        ImportExportController.upload(inputRef, 'http://localhost:8081/importFromFile')
             .then(() => props.getDbContent(), reason => console.log(reason))
     };
 
-    const handleExport = async (expectedResponseType, extension) => {
-        ImportExportController.handleExport(expectedResponseType).then((blob) => {
+    const handleExport = async (expectedResponseType: string, extension: string) => {
+        ImportExportController.handleExport(expectedResponseType).then((blob: any) => {
             prepareDownload(blob, extension)
         })
     }
 
-    const prepareDownload = (blob, extension) => {
+    const prepareDownload = (blob: Blob, extension: string) => {
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.download = "export." + extension;
@@ -58,10 +60,10 @@ export default function CustomNavbar(props) {
                         <div className='customDropOption' onClick={() => handleExport("application/json", "json")}>
                             as Json
                         </div>
-                        <div className='customDropOption' onClick={() => handleExport("application/xml", "xml")}>
+                        <div className='customDropOption' onClick={() => handleExport("text/xml", "xml")}>
                             as XML
                         </div>
-                        <div className='customDropOption' onClick={() => handleExport("application/csv", "csv")}>
+                        <div className='customDropOption' onClick={() => handleExport("text/csv", "csv")}>
                             as CSV
                         </div>
                     </div>

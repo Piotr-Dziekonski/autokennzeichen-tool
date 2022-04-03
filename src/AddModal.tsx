@@ -1,9 +1,14 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import Modal from "react-bootstrap/Modal";
 import { Button, Form } from 'react-bootstrap';
 import ImportExportController from './ImportExportController';
 
-export default function AddModal(props) {
+type Props = {
+    onHide: () => void,
+    show: boolean
+}
+
+export default function AddModal(props: Props) {
 
     const [ortskuerzel, setOrtskuerzel] = useState("");
     const [ursprung, setUrsprung] = useState("");
@@ -32,25 +37,25 @@ export default function AddModal(props) {
                 <Form.Control
                     type="text"
                     id="ortskuerzel"
-                    onChange={setOrtskuerzel}
+                    onChange={(e) => setOrtskuerzel(e.target.value)}
                 />
                 <Form.Label htmlFor="ursprung">Ursprung:</Form.Label>
                 <Form.Control
                     type="text"
                     id="ursprung"
-                    onChange={setUrsprung}
+                    onChange={(e) => setUrsprung(e.target.value)}
                 />
                 <Form.Label htmlFor="region">Stadt/Landkreis:</Form.Label>
                 <Form.Control
                     type="text"
                     id="region"
-                    onChange={setLandkreis}
+                    onChange={(e) => setLandkreis(e.target.value)}
                 />
                 <Form.Label htmlFor="bundesland">Bundesland:</Form.Label>
                 <Form.Control
                     type="text"
                     id="bundesland"
-                    onChange={setBundesland}
+                    onChange={(e) => setBundesland(e.target.value)}
                 />
 
             </Modal.Body>
