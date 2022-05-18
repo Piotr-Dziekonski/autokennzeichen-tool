@@ -46,8 +46,8 @@ export default function CustomNavbar(props: Props) {
                 Autokennzeichentool
             </div>
             <div className='customOptionBar'>
-                <div className='customOption customOptionBarElement' >
-                <a id="importOption" href="#import" className='navbar-link d-flex' onClick={handleUpload}>
+                <div className='customOption customOptionBarElement' onClick={handleUpload}>
+                <a id="importOption" href="#import" className='navbar-link d-flex'>
                     <form action="/upload" method="post" encType="multipart/form-data">
                     <input id="input-file" name={"uploadedFile"} ref={inputRef} onChange={upload} className="d-none" type="file" />
                     Import

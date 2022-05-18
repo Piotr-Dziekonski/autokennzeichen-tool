@@ -71,6 +71,11 @@
     transition: all 0.5s;
     cursor: pointer;
 }
+.customOptionBarElement:hover a {
+    color: white !important;
+    transition: all 0.5s;
+    cursor: pointer;
+}
 .customDropdown:hover .customDropList, .customDropdown:hover {
     visibility: visible;
     opacity: 1;
