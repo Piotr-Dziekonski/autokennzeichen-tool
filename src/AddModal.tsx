@@ -26,8 +26,11 @@ export default function AddModal(props: Props) {
         errMsgRef.current?.classList.remove("hidden")
         props.onHide()
         await ImportExportController.addNewLicensePlate(ortskuerzel, ursprung, landkreis, bundesland)
+        setOrtskuerzel("")
+        setUrsprung("")
+        setLandkreis("")
+        setBundesland("")
         props.onAdd()
-
     }
 
     return (
