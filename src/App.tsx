@@ -85,6 +85,7 @@ function App() {
           <AddModal
             show={modalShow}
             onHide={() => setModalShow(false)}
+            onAdd={() => fetchDbContent()}
           />
         </div>
         <Table striped bordered hover>

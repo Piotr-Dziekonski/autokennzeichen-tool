@@ -1,10 +1,12 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import Modal from "react-bootstrap/Modal";
 import { Button, Form } from 'react-bootstrap';
 import ImportExportController from './ImportExportController';
+import './AddModal.css';
 
 type Props = {
     onHide: () => void,
+    onAdd: () => void,
     show: boolean
 }
 
@@ -14,14 +16,24 @@ export default function AddModal(props: Props) {
     const [ursprung, setUrsprung] = useState("");
     const [landkreis, setLandkreis] = useState("");
     const [bundesland, setBundesland] = useState("");
+    const errMsgRef = useRef<HTMLParagraphElement>(null);
 
-    const handleSave = () => {
+    const handleSave = async () => {
+        if(ortskuerzel === "" || ursprung === "" || landkreis === "" || bundesland === "") {
+            errMsgRef.current?.classList.add("visible")
+            return
+        }
+        errMsgRef.current?.classList.remove("hidden")
         props.onHide()
-        ImportExportController.addNewLicensePlate(ortskuerzel, ursprung, landkreis, bundesland)
+        await ImportExportController.addNewLicensePlate(ortskuerzel, ursprung, landkreis, bundesland)
+        props.onAdd()
+
     }
 
     return (
-        <Modal {...props}
+        <Modal
+            onHide={props.onHide}
+            show={props.show}
             size="lg"
             aria-labelledby="contained-modal-title-vcenter"
             centered>
@@ -57,7 +69,7 @@ export default function AddModal(props: Props) {
                     id="bundesland"
                     onChange={(e) => setBundesland(e.target.value)}
                 />
-
+                <p ref={errMsgRef} className='errMsgOnSave hidden'>Kein Feld darf leer sein!</p>
             </Modal.Body>
             <Modal.Footer>
                 <Button onClick={handleSave}>Speichern</Button>
